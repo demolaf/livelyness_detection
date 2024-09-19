@@ -107,12 +107,12 @@ class LivelynessDetection {
         ? LivelynessDetectionScreenV1(
             config: config,
             onDetectionComplete: onDetectionComplete,
-            embedded: true,
+            isEmbedded: true,
           )
         : LivelynessDetectionPageV2(
             config: config,
             onDetectionComplete: onDetectionComplete,
-            embedded: true,
+            isEmbedded: true,
           );
   }
 

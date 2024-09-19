@@ -13,13 +13,13 @@ class LivelynessDetectionScreenV1 extends StatefulWidget {
   const LivelynessDetectionScreenV1({
     required this.config,
     this.onDetectionComplete,
-    this.embedded = false,
+    this.isEmbedded = false,
     super.key,
   });
 
   final DetectionConfig config;
   final ValueChanged<CapturedImage?>? onDetectionComplete;
-  final bool embedded;
+  final bool isEmbedded;
 
   @override
   State<LivelynessDetectionScreenV1> createState() =>
@@ -314,15 +314,24 @@ class _MLivelyness7DetectionScreenState
   }) {
     final String imgPath = imgToReturn?.path ?? "";
     if (imgPath.isEmpty || didCaptureAutomatically == null) {
-      Navigator.of(context).pop(null);
+      if (widget.isEmbedded) {
+        widget.onDetectionComplete?.call(null);
+      } else {
+        Navigator.of(context).pop(null);
+      }
       return;
     }
+
     final capturedImage = CapturedImage(
       imgPath: imgPath,
       didCaptureAutomatically: didCaptureAutomatically,
     );
-    widget.onDetectionComplete?.call(capturedImage);
-    Navigator.of(context).pop(capturedImage);
+
+    if (widget.isEmbedded) {
+      widget.onDetectionComplete?.call(capturedImage);
+    } else {
+      Navigator.of(context).pop(capturedImage);
+    }
   }
 
   void _resetSteps() async {
@@ -462,7 +471,7 @@ class _MLivelyness7DetectionScreenState
                   _startLiveFeed();
                 },
               ),
-        if (!widget.embedded)
+        if (!widget.isEmbedded)
           Align(
             alignment: Alignment.topRight,
             child: Padding(
