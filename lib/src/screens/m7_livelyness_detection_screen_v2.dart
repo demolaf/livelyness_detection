@@ -6,8 +6,11 @@ class LivelynessDetectionPageV2 extends StatelessWidget {
 
   const LivelynessDetectionPageV2({
     required this.config,
+    this.onDetectionComplete,
     super.key,
   });
+
+  final ValueChanged<CapturedImage?>? onDetectionComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +18,7 @@ class LivelynessDetectionPageV2 extends StatelessWidget {
       body: SafeArea(
         child: LivelynessDetectionScreenV2(
           config: config,
+          onDetectionComplete: onDetectionComplete,
         ),
       ),
     );
@@ -26,8 +30,11 @@ class LivelynessDetectionScreenV2 extends StatefulWidget {
 
   const LivelynessDetectionScreenV2({
     required this.config,
+    this.onDetectionComplete,
     super.key,
   });
+
+  final ValueChanged<CapturedImage?>? onDetectionComplete;
 
   @override
   State<LivelynessDetectionScreenV2> createState() =>
@@ -351,12 +358,12 @@ class _LivelynessDetectionScreenAndroidState
       Navigator.of(context).pop(null);
       return;
     }
-    Navigator.of(context).pop(
-      CapturedImage(
-        imgPath: imgPath,
-        didCaptureAutomatically: didCaptureAutomatically,
-      ),
+    final capturedImage = CapturedImage(
+      imgPath: imgPath,
+      didCaptureAutomatically: didCaptureAutomatically,
     );
+    widget.onDetectionComplete?.call(capturedImage);
+    Navigator.of(context).pop(capturedImage);
   }
 
   void _resetSteps() async {

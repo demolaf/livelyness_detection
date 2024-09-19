@@ -11,10 +11,14 @@ List<CameraDescription> availableCams = [];
 
 class LivelynessDetectionScreenV1 extends StatefulWidget {
   final DetectionConfig config;
+
   const LivelynessDetectionScreenV1({
     required this.config,
+    this.onDetectionComplete,
     super.key,
   });
+
+  final ValueChanged<CapturedImage?>? onDetectionComplete;
 
   @override
   State<LivelynessDetectionScreenV1> createState() =>
@@ -312,12 +316,12 @@ class _MLivelyness7DetectionScreenState
       Navigator.of(context).pop(null);
       return;
     }
-    Navigator.of(context).pop(
-      CapturedImage(
-        imgPath: imgPath,
-        didCaptureAutomatically: didCaptureAutomatically,
-      ),
+    final capturedImage = CapturedImage(
+      imgPath: imgPath,
+      didCaptureAutomatically: didCaptureAutomatically,
     );
+    widget.onDetectionComplete?.call(capturedImage);
+    Navigator.of(context).pop(capturedImage);
   }
 
   void _resetSteps() async {

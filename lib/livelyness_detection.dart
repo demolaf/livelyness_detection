@@ -78,6 +78,7 @@ class LivelynessDetection {
   Future<CapturedImage?> detectLivelyness(
     BuildContext context, {
     required DetectionConfig config,
+    ValueChanged<CapturedImage?>? onDetectionComplete,
   }) async {
     _safeAreaPadding = MediaQuery.of(context).padding;
     final CapturedImage? capturedFacePath = await Navigator.of(context).push(
@@ -85,13 +86,32 @@ class LivelynessDetection {
         builder: (context) => Platform.isIOS
             ? LivelynessDetectionScreenV1(
                 config: config,
+                onDetectionComplete: onDetectionComplete,
               )
             : LivelynessDetectionPageV2(
                 config: config,
+                onDetectionComplete: onDetectionComplete,
               ),
       ),
     );
     return capturedFacePath;
+  }
+
+  Widget embeddedView(
+    BuildContext context, {
+    required DetectionConfig config,
+    ValueChanged<CapturedImage?>? onDetectionComplete,
+  }) {
+    _safeAreaPadding = MediaQuery.of(context).padding;
+    return Platform.isIOS
+        ? LivelynessDetectionScreenV1(
+            config: config,
+            onDetectionComplete: onDetectionComplete,
+          )
+        : LivelynessDetectionPageV2(
+            config: config,
+            onDetectionComplete: onDetectionComplete,
+          );
   }
 
   /// Configures the shreshold values of which will be used while verfying
