@@ -102,15 +102,17 @@ class LivelynessDetection {
     required DetectionConfig config,
     ValueChanged<CapturedImage?>? onDetectionComplete,
   }) {
-    _safeAreaPadding = MediaQuery.of(context).padding;
+    // _safeAreaPadding = MediaQuery.of(context).padding;
     return Platform.isIOS
         ? LivelynessDetectionScreenV1(
             config: config,
             onDetectionComplete: onDetectionComplete,
+            embedded: true,
           )
         : LivelynessDetectionPageV2(
             config: config,
             onDetectionComplete: onDetectionComplete,
+            embedded: true,
           );
   }
 

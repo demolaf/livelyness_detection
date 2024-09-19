@@ -7,10 +7,12 @@ class LivelynessDetectionPageV2 extends StatelessWidget {
   const LivelynessDetectionPageV2({
     required this.config,
     this.onDetectionComplete,
+    this.embedded = false,
     super.key,
   });
 
   final ValueChanged<CapturedImage?>? onDetectionComplete;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,7 @@ class LivelynessDetectionPageV2 extends StatelessWidget {
         child: LivelynessDetectionScreenV2(
           config: config,
           onDetectionComplete: onDetectionComplete,
+          embedded: embedded,
         ),
       ),
     );
@@ -26,15 +29,16 @@ class LivelynessDetectionPageV2 extends StatelessWidget {
 }
 
 class LivelynessDetectionScreenV2 extends StatefulWidget {
-  final DetectionConfig config;
-
   const LivelynessDetectionScreenV2({
     required this.config,
     this.onDetectionComplete,
+    this.embedded = false,
     super.key,
   });
 
+  final DetectionConfig config;
   final ValueChanged<CapturedImage?>? onDetectionComplete;
+  final bool embedded;
 
   @override
   State<LivelynessDetectionScreenV2> createState() =>
@@ -61,7 +65,7 @@ class _LivelynessDetectionScreenAndroidState
 
   late final List<LivelynessStepItem> _steps;
   final GlobalKey<LivelynessDetectionStepOverlayState> _stepsKey =
-      GlobalKey<LivelynessDetectionStepOverlayState>();
+  GlobalKey<LivelynessDetectionStepOverlayState>();
 
   CameraState? _cameraState;
   bool _isProcessing = false;
@@ -77,7 +81,7 @@ class _LivelynessDetectionScreenAndroidState
     _preInitCallBack();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _postFrameCallBack(),
+          (_) => _postFrameCallBack(),
     );
   }
 
@@ -114,14 +118,14 @@ class _LivelynessDetectionScreenAndroidState
     }
     if (mounted) {
       setState(
-        () => _isProcessing = true,
+            () => _isProcessing = true,
       );
     }
     final inputImage = img.toInputImage();
 
     try {
       final List<Face> detectedFaces =
-          await faceDetector.processImage(inputImage);
+      await faceDetector.processImage(inputImage);
       _faceDetectionController.add(
         FaceDetectionModel(
           faces: detectedFaces,
@@ -134,13 +138,13 @@ class _LivelynessDetectionScreenAndroidState
       await _processImage(inputImage, detectedFaces);
       if (mounted) {
         setState(
-          () => _isProcessing = false,
+              () => _isProcessing = false,
         );
       }
     } catch (error) {
       if (mounted) {
         setState(
-          () => _isProcessing = false,
+              () => _isProcessing = false,
         );
       }
       debugPrint("...sending image resulted error $error");
@@ -229,7 +233,7 @@ class _LivelynessDetectionScreenAndroidState
     required LivelynessStep step,
   }) async {
     final int indexToUpdate = _steps.indexWhere(
-      (p0) => p0.step == step,
+          (p0) => p0.step == step,
     );
 
     _steps[indexToUpdate] = _steps[indexToUpdate].copyWith(
@@ -254,7 +258,7 @@ class _LivelynessDetectionScreenAndroidState
           _startProcessing();
           if (mounted) {
             setState(
-              () => _didCloseEyes = true,
+                  () => _didCloseEyes = true,
             );
           }
         }
@@ -288,7 +292,7 @@ class _LivelynessDetectionScreenAndroidState
       return;
     }
     setState(
-      () => _isProcessingStep = true,
+          () => _isProcessingStep = true,
     );
   }
 
@@ -297,14 +301,14 @@ class _LivelynessDetectionScreenAndroidState
       return;
     }
     setState(
-      () => _isProcessingStep = false,
+          () => _isProcessingStep = false,
     );
   }
 
   void _startTimer() {
     _timerToDetectFace = Timer(
       Duration(seconds: widget.config.maxSecToDetect),
-      () {
+          () {
         _timerToDetectFace?.cancel();
         _timerToDetectFace = null;
         if (widget.config.allowAfterMaxSec) {
@@ -329,17 +333,19 @@ class _LivelynessDetectionScreenAndroidState
       return;
     }
     _cameraState?.when(
-      onPhotoMode: (p0) => Future.delayed(
-        const Duration(milliseconds: 500),
-        () => p0.takePhoto().then(
-          (value) {
-            _onDetectionCompleted(
-              imgToReturn: value.path,
-              didCaptureAutomatically: didCaptureAutomatically,
-            );
-          },
-        ),
-      ),
+      onPhotoMode: (p0) =>
+          Future.delayed(
+            const Duration(milliseconds: 500),
+                () =>
+                p0.takePhoto().then(
+                      (value) {
+                    _onDetectionCompleted(
+                      imgToReturn: value.path,
+                      didCaptureAutomatically: didCaptureAutomatically,
+                    );
+                  },
+                ),
+          ),
     );
   }
 
@@ -351,7 +357,7 @@ class _LivelynessDetectionScreenAndroidState
       return;
     }
     setState(
-      () => _isCompleted = true,
+          () => _isCompleted = true,
     );
     final String imgPath = imgToReturn ?? "";
     if (imgPath.isEmpty || didCaptureAutomatically == null) {
@@ -369,7 +375,7 @@ class _LivelynessDetectionScreenAndroidState
   void _resetSteps() async {
     for (var p0 in _steps) {
       final int index = _steps.indexWhere(
-        (p1) => p1.step == p0.step,
+            (p1) => p1.step == p0.step,
       );
       _steps[index] = _steps[index].copyWith(
         isCompleted: false,
@@ -394,82 +400,83 @@ class _LivelynessDetectionScreenAndroidState
       children: [
         _isInfoStepCompleted
             ? CameraAwesomeBuilder.custom(
-                // flashMode: FlashMode.auto,
-                previewFit: CameraPreviewFit.contain,
-                // aspectRatio: CameraAspectRatios.ratio_16_9,
-                sensorConfig: SensorConfig.single(
-                  aspectRatio: CameraAspectRatios.ratio_16_9,
-                  flashMode: FlashMode.auto,
-                  sensor: Sensor.position(SensorPosition.front),
-                ),
-                onImageForAnalysis: (img) => _processCameraImage(img),
-                imageAnalysisConfig: AnalysisConfig(
-                  autoStart: true,
-                  androidOptions: const AndroidAnalysisOptions.nv21(
-                    width: 250,
-                  ),
-                  maxFramesPerSecond: 30,
-                ),
-                builder: (state, preview) {
-                  _cameraState = state;
-                  return widget.config.showFacialVertices
-                      ? PreviewDecoratorWidget(
-                          cameraState: state,
-                          faceDetectionStream: _faceDetectionController,
-                          previewSize: PreviewSize(
-                            width: preview.previewSize.width,
-                            height: preview.previewSize.height,
-                          ),
-                          previewRect: preview.rect,
-                        )
-                      : const SizedBox();
-                },
-                // (state, previewSize, previewRect) {
-                //   _cameraState = state;
-                //   return PreviewDecoratorWidget(
-                //     cameraState: state,
-                //     faceDetectionStream: _faceDetectionController,
-                //     previewSize: previewSize,
-                //     previewRect: previewRect,
-                //     detectionColor:
-                //         _steps[_stepsKey.currentState?.currentIndex ?? 0]
-                //             .detectionColor,
-                //   );
-                // },
-                saveConfig: SaveConfig.photo(
-                  pathBuilder: (_) async {
-                    final String fileName = "${Utils.generate()}.jpg";
-                    final String path = await getTemporaryDirectory().then(
-                      (value) => value.path,
-                    );
-                    // return "$path/$fileName";
-                    return SingleCaptureRequest(
-                      "$path/$fileName",
-                      Sensor.position(
-                        SensorPosition.front,
-                      ),
-                    );
-                  },
-                ),
-              )
-            : LivelynessInfoWidget(
-                onStartTap: () {
-                  if (!mounted) {
-                    return;
-                  }
-                  _startTimer();
-                  setState(
-                    () => _isInfoStepCompleted = true,
-                  );
-                },
+          // flashMode: FlashMode.auto,
+          previewFit: CameraPreviewFit.contain,
+          // aspectRatio: CameraAspectRatios.ratio_16_9,
+          sensorConfig: SensorConfig.single(
+            aspectRatio: CameraAspectRatios.ratio_16_9,
+            flashMode: FlashMode.auto,
+            sensor: Sensor.position(SensorPosition.front),
+          ),
+          onImageForAnalysis: (img) => _processCameraImage(img),
+          imageAnalysisConfig: AnalysisConfig(
+            autoStart: true,
+            androidOptions: const AndroidAnalysisOptions.nv21(
+              width: 250,
+            ),
+            maxFramesPerSecond: 30,
+          ),
+          builder: (state, preview) {
+            _cameraState = state;
+            return widget.config.showFacialVertices
+                ? PreviewDecoratorWidget(
+              cameraState: state,
+              faceDetectionStream: _faceDetectionController,
+              previewSize: PreviewSize(
+                width: preview.previewSize.width,
+                height: preview.previewSize.height,
               ),
+              previewRect: preview.rect,
+            )
+                : const SizedBox();
+          },
+          // (state, previewSize, previewRect) {
+          //   _cameraState = state;
+          //   return PreviewDecoratorWidget(
+          //     cameraState: state,
+          //     faceDetectionStream: _faceDetectionController,
+          //     previewSize: previewSize,
+          //     previewRect: previewRect,
+          //     detectionColor:
+          //         _steps[_stepsKey.currentState?.currentIndex ?? 0]
+          //             .detectionColor,
+          //   );
+          // },
+          saveConfig: SaveConfig.photo(
+            pathBuilder: (_) async {
+              final String fileName = "${Utils.generate()}.jpg";
+              final String path = await getTemporaryDirectory().then(
+                    (value) => value.path,
+              );
+              // return "$path/$fileName";
+              return SingleCaptureRequest(
+                "$path/$fileName",
+                Sensor.position(
+                  SensorPosition.front,
+                ),
+              );
+            },
+          ),
+        )
+            : LivelynessInfoWidget(
+          onStartTap: () {
+            if (!mounted) {
+              return;
+            }
+            _startTimer();
+            setState(
+                  () => _isInfoStepCompleted = true,
+            );
+          },
+        ),
         if (_isInfoStepCompleted)
           LivelynessDetectionStepOverlay(
             key: _stepsKey,
             steps: _steps,
-            onCompleted: () => _takePicture(
-              didCaptureAutomatically: true,
-            ),
+            onCompleted: () =>
+                _takePicture(
+                  didCaptureAutomatically: true,
+                ),
           ),
         Visibility(
           visible: _isCaptureButtonVisible,
@@ -482,11 +489,14 @@ class _LivelynessDetectionScreenAndroidState
                 flex: 20,
               ),
               MaterialButton(
-                onPressed: () => _takePicture(
-                  didCaptureAutomatically: false,
-                ),
+                onPressed: () =>
+                    _takePicture(
+                      didCaptureAutomatically: false,
+                    ),
                 color: widget.config.captureButtonColor ??
-                    Theme.of(context).primaryColor,
+                    Theme
+                        .of(context)
+                        .primaryColor,
                 textColor: Colors.white,
                 padding: const EdgeInsets.all(16),
                 shape: const CircleBorder(),
@@ -499,38 +509,39 @@ class _LivelynessDetectionScreenAndroidState
             ],
           ),
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 10,
-              top: 10,
-            ),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.black,
-              child: IconButton(
-                onPressed: () {
-                  _onDetectionCompleted(
-                    imgToReturn: null,
-                    didCaptureAutomatically: null,
-                  );
-                },
-                icon: const Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: Colors.white,
+        if (!widget.embedded)
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 10,
+                top: 10,
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.black,
+                child: IconButton(
+                  onPressed: () {
+                    _onDetectionCompleted(
+                      imgToReturn: null,
+                      didCaptureAutomatically: null,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
 
-  double calculateSymmetry(
-      Point<int>? leftPosition, Point<int>? rightPosition) {
+  double calculateSymmetry(Point<int>? leftPosition,
+      Point<int>? rightPosition) {
     if (leftPosition != null && rightPosition != null) {
       final double dx = (rightPosition.x - leftPosition.x).abs().toDouble();
       final double dy = (rightPosition.y - leftPosition.y).abs().toDouble();

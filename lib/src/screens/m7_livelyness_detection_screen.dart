@@ -10,15 +10,16 @@ import '../../livelyness_detection.dart';
 List<CameraDescription> availableCams = [];
 
 class LivelynessDetectionScreenV1 extends StatefulWidget {
-  final DetectionConfig config;
-
   const LivelynessDetectionScreenV1({
     required this.config,
     this.onDetectionComplete,
+    this.embedded = false,
     super.key,
   });
 
+  final DetectionConfig config;
   final ValueChanged<CapturedImage?>? onDetectionComplete;
+  final bool embedded;
 
   @override
   State<LivelynessDetectionScreenV1> createState() =>
@@ -461,30 +462,31 @@ class _MLivelyness7DetectionScreenState
                   _startLiveFeed();
                 },
               ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 10,
-              top: 10,
-            ),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.black,
-              child: IconButton(
-                onPressed: () => _onDetectionCompleted(
-                  imgToReturn: null,
-                  didCaptureAutomatically: null,
-                ),
-                icon: const Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: Colors.white,
+        if (!widget.embedded)
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 10,
+                top: 10,
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.black,
+                child: IconButton(
+                  onPressed: () => _onDetectionCompleted(
+                    imgToReturn: null,
+                    didCaptureAutomatically: null,
+                  ),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
