@@ -4,6 +4,7 @@ version: 0.0.1+5
 homepage: https://github.com/GhagSagar23/livelyness_detection
 repository: https://github.com/GhagSagar23/livelyness_detection/
 issue_tracker: https://github.com/GhagSagar23/livelyness_detection/issues
+publish_to: none
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -11,11 +12,11 @@ environment:
 
 dependencies:
   animate_do: ^3.3.4
-  camera:
+  camera: ^0.11.0+1
+  camerawesome:
     git:
       url: https://github.com/demolaf/CamerAwesome.git
       ref: master
-  camerawesome: ^2.3.0
   collection: ^1.17.0
   equatable: ^2.0.5
   flutter:
