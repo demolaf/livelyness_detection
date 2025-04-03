@@ -88,7 +88,7 @@ class LivelynessDetection {
                 config: config,
                 onDetectionComplete: onDetectionComplete,
               )
-            : LivelynessDetectionScreenV1(
+            : LivelynessDetectionPageV2(
                 config: config,
                 onDetectionComplete: onDetectionComplete,
               ),
@@ -109,7 +109,7 @@ class LivelynessDetection {
             onDetectionComplete: onDetectionComplete,
             isEmbedded: true,
           )
-        : LivelynessDetectionScreenV1(
+        : LivelynessDetectionPageV2(
             config: config,
             onDetectionComplete: onDetectionComplete,
             isEmbedded: true,
